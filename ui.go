@@ -14,6 +14,8 @@ type textEdit struct {
 	cursorRow, cursorCol *widget.Label
 	entry                *widget.Entry
 	window               fyne.Window
+
+	uri fyne.URI
 }
 
 func (e *textEdit) updateStatus() {
@@ -34,9 +36,13 @@ func (e *textEdit) paste() {
 }
 
 func (e *textEdit) buildToolbar() *widget.Toolbar {
-	return widget.NewToolbar(widget.NewToolbarAction(theme.DocumentCreateIcon(), func() {
-		e.entry.SetText("")
-	}),
+	return widget.NewToolbar(
+		widget.NewToolbarAction(theme.FolderOpenIcon(), e.open),
+		widget.NewToolbarAction(theme.DocumentSaveIcon(), e.save),
+		widget.NewToolbarSeparator(),
+		widget.NewToolbarAction(theme.DocumentCreateIcon(), func() {
+			e.entry.SetText("")
+		}),
 		widget.NewToolbarSeparator(),
 		widget.NewToolbarAction(theme.ContentCutIcon(), e.cut),
 		widget.NewToolbarAction(theme.ContentCopyIcon(), e.copy),
@@ -45,7 +51,7 @@ func (e *textEdit) buildToolbar() *widget.Toolbar {
 }
 
 // makeUI loads a new text editor
-func makeUI(win fyne.Window) fyne.CanvasObject {
+func makeUI(win fyne.Window) (*textEdit, fyne.CanvasObject) {
 	entry := widget.NewMultiLineEntry()
 	cursorRow := widget.NewLabel("1")
 	cursorCol := widget.NewLabel("1")
@@ -65,5 +71,5 @@ func makeUI(win fyne.Window) fyne.CanvasObject {
 
 	editor.entry.OnCursorChanged = editor.updateStatus
 
-	return content
+	return editor, content
 }
