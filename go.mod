@@ -1,4 +1,4 @@
-module github.com/fyne-io/examples
+module github.com/FyshOS/textedit
 
 go 1.12
 
