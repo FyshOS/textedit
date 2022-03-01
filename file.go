@@ -70,6 +70,11 @@ func (e *textEdit) save() {
 
 func (e *textEdit) saveAs(w fyne.URIWriteCloser) error {
 	_, err := w.Write([]byte(e.entry.Text))
+	if err != nil {
+		return err
+	}
+
 	_ = w.Close()
-	return err
+	e.uri = w.URI()
+	return nil
 }
