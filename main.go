@@ -16,7 +16,8 @@ func main() {
 	a.SetIcon(resourceIconPng)
 	w := a.NewWindow("TextEdit")
 
-	edit, ui := makeUI(w)
+	edit := &textEdit{window: w, changed: binding.NewBool()}
+	ui := edit.makeUI()
 	w.SetContent(ui)
 
 	if len(os.Args) > 1 {

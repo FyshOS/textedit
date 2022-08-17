@@ -51,25 +51,19 @@ func (e *textEdit) buildToolbar() *widget.Toolbar {
 }
 
 // makeUI loads a new text editor
-func makeUI(win fyne.Window) (*textEdit, fyne.CanvasObject) {
-	entry := widget.NewMultiLineEntry()
-	cursorRow := widget.NewLabel("1")
-	cursorCol := widget.NewLabel("1")
+func (e *textEdit) makeUI() fyne.CanvasObject {
+	e.entry = widget.NewMultiLineEntry()
+	e.cursorRow = widget.NewLabel("1")
+	e.cursorCol = widget.NewLabel("1")
 
-	editor := &textEdit{
-		cursorRow: cursorRow,
-		cursorCol: cursorCol,
-		entry:     entry,
-		window:    win,
+	e.entry.OnCursorChanged = e.updateStatus
+	e.entry.OnChanged = func(s string) {
+		e.changed.Set(true)
 	}
 
-	toolbar := editor.buildToolbar()
+	toolbar := e.buildToolbar()
 	status := container.NewHBox(layout.NewSpacer(),
-		widget.NewLabel("Cursor Row:"), cursorRow,
-		widget.NewLabel("Col:"), cursorCol)
-	content := container.NewBorder(toolbar, status, nil, nil, container.NewScroll(entry))
-
-	editor.entry.OnCursorChanged = editor.updateStatus
-
-	return editor, content
+		widget.NewLabel("Cursor Row:"), e.cursorRow,
+		widget.NewLabel("Col:"), e.cursorCol)
+	return container.NewBorder(toolbar, status, nil, nil, container.NewScroll(e.entry))
 }
