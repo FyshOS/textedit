@@ -5,6 +5,7 @@ import (
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
+	"fyne.io/fyne/v2/data/binding"
 	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
@@ -14,6 +15,7 @@ type textEdit struct {
 	cursorRow, cursorCol *widget.Label
 	entry                *widget.Entry
 	window               fyne.Window
+	changed              binding.Bool
 
 	uri fyne.URI
 }

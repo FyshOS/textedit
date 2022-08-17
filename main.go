@@ -7,6 +7,7 @@ import (
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
+	"fyne.io/fyne/v2/data/binding"
 	"fyne.io/fyne/v2/dialog"
 	"fyne.io/fyne/v2/storage"
 )
@@ -19,6 +20,15 @@ func main() {
 	edit := &textEdit{window: w, changed: binding.NewBool()}
 	ui := edit.makeUI()
 	w.SetContent(ui)
+
+	edit.changed.AddListener(binding.NewDataListener(func() {
+		edited, _ := edit.changed.Get()
+		if edited {
+			w.SetTitle("TextEdit *")
+		} else {
+			w.SetTitle("TextEdit")
+		}
+	}))
 
 	if len(os.Args) > 1 {
 		file := storage.NewFileURI(os.Args[1])

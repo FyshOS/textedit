@@ -15,6 +15,7 @@ func (e *textEdit) load(r fyne.URIReadCloser) error {
 	if err == nil {
 		e.uri = r.URI()
 		e.entry.SetText(string(data))
+		e.changed.Set(false)
 	}
 	return err
 }
@@ -76,5 +77,7 @@ func (e *textEdit) saveAs(w fyne.URIWriteCloser) error {
 
 	_ = w.Close()
 	e.uri = w.URI()
+
+	e.changed.Set(false)
 	return nil
 }
