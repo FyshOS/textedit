@@ -43,6 +43,7 @@ func main() {
 		}
 	}
 
+	w.Canvas().Focus(edit.entry)
 	w.Resize(fyne.NewSize(480, 360))
 	w.ShowAndRun()
 }
