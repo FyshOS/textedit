@@ -26,15 +26,15 @@ func (e *textEdit) updateStatus() {
 }
 
 func (e *textEdit) cut() {
-	e.entry.TypedShortcut(&fyne.ShortcutCut{Clipboard: e.window.Clipboard()})
+	e.entry.TypedShortcut(&fyne.ShortcutCut{Clipboard: fyne.CurrentApp().Clipboard()})
 }
 
 func (e *textEdit) copy() {
-	e.entry.TypedShortcut(&fyne.ShortcutCopy{Clipboard: e.window.Clipboard()})
+	e.entry.TypedShortcut(&fyne.ShortcutCopy{Clipboard: fyne.CurrentApp().Clipboard()})
 }
 
 func (e *textEdit) paste() {
-	e.entry.TypedShortcut(&fyne.ShortcutPaste{Clipboard: e.window.Clipboard()})
+	e.entry.TypedShortcut(&fyne.ShortcutPaste{Clipboard: fyne.CurrentApp().Clipboard()})
 }
 
 func (e *textEdit) buildToolbar() *widget.Toolbar {

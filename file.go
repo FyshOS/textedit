@@ -1,7 +1,7 @@
 package main
 
 import (
-	"io/ioutil"
+	"io"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/dialog"
@@ -9,7 +9,7 @@ import (
 )
 
 func (e *textEdit) load(r fyne.URIReadCloser) error {
-	data, err := ioutil.ReadAll(r)
+	data, err := io.ReadAll(r)
 	_ = r.Close()
 
 	if err == nil {

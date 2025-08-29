@@ -1,7 +1,6 @@
 package main
 
 import (
-	"io/ioutil"
 	"os"
 	"testing"
 
@@ -41,13 +40,13 @@ func TestSave(t *testing.T) {
 	assert.Nil(t, err)
 	out.Close()
 
-	data, err := ioutil.ReadFile("./testdata/test2.txt")
+	data, err := os.ReadFile("./testdata/test2.txt")
 	assert.Nil(t, err)
 	assert.Equal(t, "Testing", string(data))
 
 	edit.entry.SetText("Testing2")
 	edit.save()
-	data, err = ioutil.ReadFile("./testdata/test2.txt")
+	data, err = os.ReadFile("./testdata/test2.txt")
 	assert.Nil(t, err)
 	assert.Equal(t, "Testing2", string(data))
 }
