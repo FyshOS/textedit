@@ -6,6 +6,7 @@ import (
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/data/binding"
+	"fyne.io/fyne/v2/driver/desktop"
 	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
@@ -13,7 +14,7 @@ import (
 
 type textEdit struct {
 	cursorRow, cursorCol *widget.Label
-	entry                *widget.Entry
+	entry                *editorEntry
 	window               fyne.Window
 	changed              binding.Bool
 
@@ -54,7 +55,7 @@ func (e *textEdit) buildToolbar() *widget.Toolbar {
 
 // makeUI loads a new text editor
 func (e *textEdit) makeUI() fyne.CanvasObject {
-	e.entry = widget.NewMultiLineEntry()
+	e.entry = newEditorEntry(e)
 	e.cursorRow = widget.NewLabel("1")
 	e.cursorCol = widget.NewLabel("1")
 
@@ -68,4 +69,26 @@ func (e *textEdit) makeUI() fyne.CanvasObject {
 		widget.NewLabel("Cursor Row:"), e.cursorRow,
 		widget.NewLabel("Col:"), e.cursorCol)
 	return container.NewBorder(toolbar, status, nil, nil, container.NewScroll(e.entry))
+}
+
+type editorEntry struct {
+	widget.Entry
+
+	edit *textEdit
+}
+
+func newEditorEntry(edit *textEdit) *editorEntry {
+	e := &editorEntry{edit: edit}
+	e.MultiLine = true
+	e.ExtendBaseWidget(e)
+	return e
+}
+
+func (e *editorEntry) TypedShortcut(shortcut fyne.Shortcut) {
+	if desk, ok := shortcut.(*desktop.CustomShortcut); ok && desk.Modifier == fyne.KeyModifierControl {
+		switch desk.KeyName {
+		case fyne.KeyS:
+			e.edit.save()
+		}
+	}
 }
