@@ -6,6 +6,7 @@ import (
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/data/binding"
+	"fyne.io/fyne/v2/dialog"
 	"fyne.io/fyne/v2/driver/desktop"
 	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/theme"
@@ -38,13 +39,22 @@ func (e *textEdit) paste() {
 	e.entry.TypedShortcut(&fyne.ShortcutPaste{Clipboard: fyne.CurrentApp().Clipboard()})
 }
 
-func (e *textEdit) buildToolbar() *widget.Toolbar {
+func (e *textEdit) buildToolbar(w fyne.Window) *widget.Toolbar {
 	return widget.NewToolbar(
 		widget.NewToolbarAction(theme.FolderOpenIcon(), e.open),
 		widget.NewToolbarAction(theme.DocumentSaveIcon(), e.save),
 		widget.NewToolbarSeparator(),
-		widget.NewToolbarAction(theme.DocumentCreateIcon(), func() {
-			e.entry.SetText("")
+		widget.NewToolbarAction(theme.FileIcon(), func() {
+			dialog.ShowConfirm("Start a new document",
+				"Are you sure you want to clear the contents of this editor?",
+				func(ok bool) {
+					if !ok {
+						return
+					}
+
+					e.entry.SetText("")
+					e.uri = nil
+				}, w)
 		}),
 		widget.NewToolbarSeparator(),
 		widget.NewToolbarAction(theme.ContentCutIcon(), e.cut),
@@ -54,7 +64,7 @@ func (e *textEdit) buildToolbar() *widget.Toolbar {
 }
 
 // makeUI loads a new text editor
-func (e *textEdit) makeUI() fyne.CanvasObject {
+func (e *textEdit) makeUI(w fyne.Window) fyne.CanvasObject {
 	e.entry = newEditorEntry(e)
 	e.cursorRow = widget.NewLabel("1")
 	e.cursorCol = widget.NewLabel("1")
@@ -64,7 +74,7 @@ func (e *textEdit) makeUI() fyne.CanvasObject {
 		e.changed.Set(true)
 	}
 
-	toolbar := e.buildToolbar()
+	toolbar := e.buildToolbar(w)
 	status := container.NewHBox(layout.NewSpacer(),
 		widget.NewLabel("Cursor Row:"), e.cursorRow,
 		widget.NewLabel("Col:"), e.cursorCol)

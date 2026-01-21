@@ -18,7 +18,7 @@ func main() {
 	w := a.NewWindow("TextEdit")
 
 	edit := &textEdit{window: w, changed: binding.NewBool()}
-	ui := edit.makeUI()
+	ui := edit.makeUI(w)
 	w.SetContent(ui)
 
 	edit.changed.AddListener(binding.NewDataListener(func() {
