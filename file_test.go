@@ -14,7 +14,7 @@ import (
 func TestLoad(t *testing.T) {
 	w := test.NewWindow(nil)
 	edit := &textEdit{window: w, changed: binding.NewBool()}
-	ui := edit.makeUI()
+	ui := edit.makeUI(w)
 	w.SetContent(ui)
 
 	r, err := storage.Reader(storage.NewFileURI("./testdata/test.txt"))
@@ -28,7 +28,7 @@ func TestLoad(t *testing.T) {
 func TestSave(t *testing.T) {
 	w := test.NewWindow(nil)
 	edit := &textEdit{window: w, changed: binding.NewBool()}
-	ui := edit.makeUI()
+	ui := edit.makeUI(w)
 	w.SetContent(ui)
 
 	out, err := storage.Writer(storage.NewFileURI("./testdata/test2.txt"))
