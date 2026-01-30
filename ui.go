@@ -99,6 +99,9 @@ func (e *editorEntry) TypedShortcut(shortcut fyne.Shortcut) {
 		switch desk.KeyName {
 		case fyne.KeyS:
 			e.edit.save()
+			return
 		}
 	}
+
+	e.Entry.TypedShortcut(shortcut)
 }
