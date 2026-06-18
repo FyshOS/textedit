@@ -1,5 +1,8 @@
 [Details]
-  Icon = "img/Icon.png"
-  Name = "TextEdit"
-  ID = "com.fyshos.textedit"
-  Build = 2
+Icon = "img/Icon.png"
+Name = "TextEdit"
+ID = "com.fyshos.textedit"
+Build = 3
+
+[LinuxAndBSD]
+Categories = ["Utility"]
