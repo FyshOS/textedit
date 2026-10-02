@@ -22,12 +22,16 @@ func main() {
 	w.SetContent(ui)
 
 	edit.changed.AddListener(binding.NewDataListener(func() {
+		title := "TextEdit"
+		if edit.uri != nil {
+			title += ": " + edit.uri.Name()
+		}
 		edited, _ := edit.changed.Get()
 		if edited {
-			w.SetTitle("TextEdit *")
-		} else {
-			w.SetTitle("TextEdit")
+			title += " *"
 		}
+
+		w.SetTitle(title)
 	}))
 
 	if len(os.Args) > 1 {
