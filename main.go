@@ -10,6 +10,7 @@ import (
 	"fyne.io/fyne/v2/data/binding"
 	"fyne.io/fyne/v2/dialog"
 	"fyne.io/fyne/v2/storage"
+	"fyne.io/fyne/v2/theme"
 )
 
 func main() {
@@ -47,7 +48,7 @@ func main() {
 		}
 	}
 
-	w.Canvas().Focus(edit.entry)
+	edit.focus()
 	w.Resize(fyne.NewSize(480, 360))
 	w.ShowAndRun()
 }
