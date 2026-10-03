@@ -1,4 +1,5 @@
 //go:generate fyne bundle -o data.go img/Icon.png
+//go:generate fyne bundle -o icons.go img/format
 
 package main
 
