@@ -12,6 +12,7 @@ import (
 	"fyne.io/fyne/v2/dialog"
 	"fyne.io/fyne/v2/storage"
 	"fyne.io/fyne/v2/theme"
+	"fyne.io/x/fyne/menu"
 )
 
 func main() {
@@ -20,8 +21,27 @@ func main() {
 	w := a.NewWindow("TextEdit")
 
 	edit := &textEdit{window: w, changed: binding.NewBool()}
+	edit.recents = menu.NewRecents("Recent items...", func(u fyne.URI) {
+		r, err := storage.Reader(u)
+		if err != nil {
+			dialog.ShowError(err, w)
+			return
+		}
+
+		edit.load(r)
+	})
 	ui := edit.makeUI(w)
 	w.SetContent(ui)
+	open := fyne.NewMenuItem("Open", edit.open)
+	open.Icon = theme.NewThemedResource(theme.FolderOpenIcon())
+	save := fyne.NewMenuItem("Save", edit.save)
+	save.Icon = theme.NewThemedResource(theme.DocumentSaveIcon())
+	fileMenu := fyne.NewMenu("File",
+		open,
+		edit.recents.MenuItem(),
+		fyne.NewMenuItemSeparator(),
+		save)
+	w.SetMainMenu(fyne.NewMainMenu(fileMenu, edit.formatMenu))
 
 	edit.changed.AddListener(binding.NewDataListener(func() {
 		title := "TextEdit"

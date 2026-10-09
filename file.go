@@ -45,6 +45,8 @@ func (e *textEdit) load(r fyne.URIReadCloser) error {
 		e.rename = false
 		e.setMode(isMarkdown(e.uri), string(data))
 		e.changed.Set(false)
+
+		e.recents.Add(e.uri)
 	}
 	return err
 }
