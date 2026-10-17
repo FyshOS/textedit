@@ -17,8 +17,12 @@ import (
 )
 
 func newTestEdit(t *testing.T) *textEdit {
+	return newTestEditIn(t, test.NewTempWindow(t, nil))
+}
+
+// newTestEditIn sets up an editor in the given window, for tests that close the window themselves.
+func newTestEditIn(t *testing.T, w fyne.Window) *textEdit {
 	test.NewTempApp(t)
-	w := test.NewTempWindow(t, nil)
 	edit := &textEdit{window: w, changed: binding.NewBool()}
 	edit.recents = menu.NewRecents("Recent items...", nil)
 	ui := edit.makeUI(w)
@@ -353,4 +357,87 @@ func TestClearStyle_Selection(t *testing.T) {
 	edit.rich.ClearSelection()
 	edit.clearStyle()
 	assert.Equal(t, "Some bold and italic text\n", edit.text())
+}
+
+// findButton walks the canvas object tree looking for a button with the given label.
+func findButton(obj fyne.CanvasObject, label string) *widget.Button {
+	switch o := obj.(type) {
+	case *widget.Button:
+		if o.Text == label {
+			return o
+		}
+	case *fyne.Container:
+		for _, child := range o.Objects {
+			if b := findButton(child, label); b != nil {
+				return b
+			}
+		}
+	case fyne.Widget:
+		for _, child := range test.WidgetRenderer(o).Objects() {
+			if b := findButton(child, label); b != nil {
+				return b
+			}
+		}
+	}
+	return nil
+}
+
+func TestConfirmClose_Unchanged(t *testing.T) {
+	edit := newTestEditIn(t, test.NewWindow(nil))
+	closed := false
+	edit.window.SetOnClosed(func() { closed = true })
+
+	edit.confirmClose()
+	assert.True(t, closed)
+	assert.Nil(t, edit.window.Canvas().Overlays().Top())
+}
+
+func TestConfirmClose_Cancel(t *testing.T) {
+	edit := newTestEditIn(t, test.NewWindow(nil))
+	defer edit.window.Close()
+	closed := false
+	edit.window.SetOnClosed(func() { closed = true })
+	edit.entry.SetText("Unsaved")
+
+	edit.confirmClose()
+	assert.False(t, closed)
+	top := edit.window.Canvas().Overlays().Top()
+	assert.NotNil(t, top)
+
+	test.Tap(findButton(top, "Cancel"))
+	assert.False(t, closed)
+	assert.Nil(t, edit.window.Canvas().Overlays().Top())
+	assert.Equal(t, "Unsaved", edit.entry.Text)
+}
+
+func TestConfirmClose_Discard(t *testing.T) {
+	edit := newTestEditIn(t, test.NewWindow(nil))
+	closed := false
+	edit.window.SetOnClosed(func() { closed = true })
+	edit.entry.SetText("Unsaved")
+
+	edit.confirmClose()
+	test.Tap(findButton(edit.window.Canvas().Overlays().Top(), "Don't Save"))
+	assert.True(t, closed)
+}
+
+func TestConfirmClose_Save(t *testing.T) {
+	edit := newTestEditIn(t, test.NewWindow(nil))
+	closed := false
+	edit.window.SetOnClosed(func() { closed = true })
+
+	path := "./testdata/close.txt"
+	defer os.Remove(path)
+	edit.uri = storage.NewFileURI(path)
+	edit.entry.SetText("Saved on close")
+
+	edit.confirmClose()
+	test.Tap(findButton(edit.window.Canvas().Overlays().Top(), "Save"))
+	assert.True(t, closed)
+
+	data, err := os.ReadFile(path)
+	assert.Nil(t, err)
+	assert.Equal(t, "Saved on close", string(data))
+	edited, _ := edit.changed.Get()
+	assert.False(t, edited)
 }

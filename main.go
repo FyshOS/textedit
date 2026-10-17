@@ -42,6 +42,7 @@ func main() {
 		fyne.NewMenuItemSeparator(),
 		save)
 	w.SetMainMenu(fyne.NewMainMenu(fileMenu, edit.formatMenu))
+	w.SetCloseIntercept(edit.confirmClose)
 
 	edit.changed.AddListener(binding.NewDataListener(func() {
 		title := "TextEdit"
